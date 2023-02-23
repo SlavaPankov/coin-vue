@@ -1,0 +1,273 @@
+@import "normalize.css";
+/* Fonts */
+
+@font-face {
+  font-family: "Ubuntu";
+  src: local('Ubuntu'),
+  url("../fonts/UbuntuRegular.woff2") format('woff2');
+  font-weight: 400;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Ubuntu";
+  src: local('Ubuntu'),
+  url("../fonts/UbuntuMedium.woff2") format('woff2');
+  font-weight: 500;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Roboto";
+  src: local('Roboto'),
+  url("../fonts/RobotoMedium.woff2") format('woff2');
+  font-weight: 500;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Work Sans";
+  src: local('Work Sans'),
+  url("../fonts/WorkSansLight.woff2") format('woff2');
+  font-weight: 300;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Work Sans";
+  src: local('Work Sans'),
+  url("../fonts/WorkSansRegular.woff2") format('woff2');
+  font-weight: 400;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Work Sans";
+  src: local('Work Sans'),
+  url("../fonts/WorkSansMedium.woff2") format('woff2');
+  font-weight: 500;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Work Sans";
+  src: local('Work Sans'),
+  url("../fonts/WorkSansSemiBold.woff2") format('woff2');
+  font-weight: 600;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Work Sans";
+  src: local("Work Sans"), url("../fonts/WorkSansBold.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+  font-style: normal;
+}
+
+/* Vars */
+
+:root {
+  /* Colors */
+  --black: #000000;
+  --primary: #116ACC;
+  --secondary-1: #182233;
+  --secondary-2: #B3CEE2;
+  --secondary-3: #D9DDE7;
+  --secondary-4: #FD4E5D;
+  --gray-1: #1F2937;
+  --gray-2: #374151;
+  --gray-3: #4B5563;
+  --gray-4: #6B7280;
+  --gray-5: #9CA3AF;
+  --gray-6: #D1D5DB;
+  --gray-7: #F3F4F6;
+  --gray-8: #e5e5e5;
+  --white: #ffffff;
+  --info: #A0C3FF;
+  --success: #76CA66;
+  --warning: #FBC756;
+  --error: #BA0000;
+}
+
+html {
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+body {
+  font-family: "Work Sans", sans-serif;
+  box-sizing: border-box;
+  min-height: 500px;
+}
+
+.heading-reset {
+  margin: 0;
+  padding: 0;
+}
+
+.list-reset {
+  padding: 0;
+  list-style: none;
+  margin: 0;
+}
+
+.btn-reset {
+  border: none;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.input-reset {
+  -webkit-appearance: none;
+  appearance: none;
+  border: none;
+  border-radius: 0;
+  background-color: #fff;
+
+  &::-webkit-search-decoration,
+  &::-webkit-search-cancel-button,
+  &::-webkit-search-results-button,
+  &::-webkit-search-results-decoration {
+    display: none;
+  }
+}
+
+img {
+  height: auto;
+  max-width: 100%;
+  object-fit: cover;
+}
+
+a {
+  text-decoration: none;
+}
+
+.btn {
+  display: block;
+  max-width: fit-content;
+  padding: 16px 24px;
+  font-family: 'Ubuntu', 'WorkSans', sans-serif;
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  border-radius: 7px;
+  border: 2px solid transparent;
+  transition: color .3s ease-in-out, border-color .3s ease-in-out, background-color .3s ease-in-out;
+  cursor: pointer;
+
+  &-primary {
+    color: var(--white);
+    background-color: var(--primary);
+
+    &:hover {
+      background-color: var(--secondary-1);
+      color: var(--white);
+    }
+
+    &:active {
+      background-color: var(--secondary-1)
+    }
+
+    &:disabled {
+      background-color: var(--gray-5);
+      pointer-events: none;
+      cursor: default;
+    }
+  }
+
+  &-white {
+    background-color: var(--white);
+    color: var(--primary);
+
+    &:hover {
+      color: var(--white);
+      background: linear-gradient(0deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3)), #116ACC;
+    }
+  }
+
+  &-secondary {
+    color: var(--white);
+    background-color: var(--secondary-4);
+  }
+
+  &-small {
+    font-size: 14px;
+    line-height: 21px;
+    padding: 14px 21px;
+  }
+}
+
+.d-flex {
+  display: flex;
+}
+
+.space-between {
+  justify-content: space-between;
+}
+
+.ai-center {
+  align-items: center;
+}
+
+.ai-end {
+  align-items: flex-end;
+}
+
+.container {
+  position: relative;
+  max-width: 1370px;
+  padding: 0 15px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+.just-validate-error-label {
+  position: absolute;
+  top: -15px;
+  left: 10px;
+  font-size: 12px;
+  line-height: 12px;
+  color: var(--error) !important;
+}
+
+.just-validate-error-field {
+  border-color: var(--error);
+}
+
+.f-wrap {
+  flex-wrap: wrap;
+}
+
+.d-column {
+  flex-direction: column;
+}
+
+.pt-150 {
+  padding-top: 150px;
+}
+
+.errorView {
+  display: block !important;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  /* display: none; <- Crashes Chrome on hover */
+  -webkit-appearance: none;
+  margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
