@@ -23,7 +23,8 @@
               class="nav__link btn btn-white"
               :class="{
                 'nav__link--active':
-                  this.$route.name === 'accounts' || 'account',
+                  this.$route.name === 'accounts' ||
+                  this.$route.name === 'account',
               }"
             >
               Счета

@@ -10,6 +10,9 @@ export default createStore({
     updateAuthToken(state, token) {
       state.authToken = token;
     },
+    updateAutofillList(state, value) {
+      state.autofillList.push(value);
+    },
   },
   actions: {},
   modules: {},

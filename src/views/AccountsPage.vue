@@ -219,9 +219,6 @@ export default {
   },
 
   created() {
-    if (!this.$store.state.authToken) {
-      this.$router.push({ name: "auth" });
-    }
     this.loadAccountsData();
   },
 };
