@@ -1,12 +1,7 @@
 <template>
   <div class="accounts">
     <base-spinner v-if="pageLoading" />
-    <div v-if="loadFailed" class="accounts__error">
-      <span>Что-то пошло не так...</span>
-      <button class="btn btn-primary" @click.prevent="loadAccountsData">
-        Попробовать снова
-      </button>
-    </div>
+    <load-error v-if="loadFailed" :callback="loadAccountsData" />
     <div v-if="pageIsLoaded" class="container accounts__container">
       <div class="accounts__top">
         <h1 class="heading-reset accounts__heading">Ваши счета</h1>
@@ -115,12 +110,13 @@
 import BaseSpinner from "@/components/BaseSpinner";
 import BasePopup from "@/components/BasePopup";
 import AccountsList from "@/components/AccountsList";
+import LoadError from "@/components/LoadError";
 import axios from "axios";
 import { BASE_URL } from "@/api/api.config";
 
 export default {
   name: "AccountsPage",
-  components: { BaseSpinner, BasePopup, AccountsList },
+  components: { BaseSpinner, BasePopup, AccountsList, LoadError },
 
   data() {
     return {
@@ -185,6 +181,7 @@ export default {
           this.loadFailed = false;
         })
         .catch(() => {
+          this.pageLoading = false;
           this.loadFailed = true;
         });
     },
@@ -234,22 +231,6 @@ export default {
 .accounts {
   &__container {
     padding-bottom: 50px;
-  }
-
-  &__error {
-    height: 80vh;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    justify-content: center;
-
-    & span {
-      display: inline-block;
-      margin-bottom: 25px;
-      font-size: 16px;
-      line-height: 20px;
-      font-weight: 400;
-    }
   }
 
   &__top {

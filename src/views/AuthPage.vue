@@ -150,7 +150,7 @@ export default {
     font-family: "Ubuntu", "Work Sans", sans-serif;
     font-size: 16px;
     line-height: 24px;
-    letter-spacing: -1%;
+    letter-spacing: -0.01em;
     background-color: var(--white);
     color: var(--black);
 
