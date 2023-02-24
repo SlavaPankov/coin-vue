@@ -5,6 +5,7 @@ import BanksPage from "@/views/BanksPage";
 import AccountsPage from "@/views/AccountsPage";
 import CurrenciesPage from "@/views/CurrenciesPage";
 import AccountPage from "@/views/AccountPage";
+import AccountsDetailPage from "@/views/AccountsDetailPage";
 
 const routes = [
   {
@@ -29,8 +30,13 @@ const routes = [
   },
   {
     name: "account",
-    path: "/account/:account",
+    path: "/accounts/:account",
     component: AccountPage,
+  },
+  {
+    name: "accountDetail",
+    path: "/accounts/:account/detail",
+    component: AccountsDetailPage,
   },
   {
     name: "currencies",

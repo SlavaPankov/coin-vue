@@ -111,43 +111,20 @@
           Отправить
         </button>
       </form>
-      <div class="account__chart">
+      <router-link :to="{ name: 'accountDetail' }" class="account__chart">
         <base-bar
           :current-account="accountNumber"
           :config="accountData.transactions"
           month-count="5"
         />
-      </div>
-      <div class="account__history history">
-        <h2 class="heading-reset history__heading">История переводов</h2>
-        <div class="history__table table">
-          <ul class="table__head list-reset">
-            <li class="table__item">Счёт отправителя</li>
-            <li class="table__item">Счёт получателя</li>
-            <li class="table__item">Сумма</li>
-            <li class="table__item">Дата</li>
-          </ul>
-          <div
-            class="table__row row"
-            v-for="(transaction, index) in slicedTransactions"
-            :key="index"
-          >
-            <div class="row__from row__item">{{ transaction.from }}</div>
-            <div class="row__to row__item">{{ transaction.to }}</div>
-            <div
-              class="row__amount row__item"
-              :class="
-                transaction.from !== accountNumber ? 'positive' : 'negative'
-              "
-            >
-              {{ formattedAmount(transaction.from, transaction.amount) }}
-            </div>
-            <div class="row__date row__item">
-              {{ formattedDate(transaction.date) }}
-            </div>
-          </div>
-        </div>
-      </div>
+      </router-link>
+      <router-link :to="{ name: 'accountDetail' }" class="account__history">
+        <transaction-history
+          :line-count="10"
+          :transactions-data="accountData.transactions"
+          :account-number="accountNumber"
+        />
+      </router-link>
     </div>
   </div>
   <base-spinner v-if="pageLoading" />
@@ -155,6 +132,7 @@
 </template>
 
 <script>
+import TransactionHistory from "@/components/TransactionHistory";
 import BaseSpinner from "@/components/BaseSpinner";
 import LoadError from "@/components/LoadError";
 import BaseBar from "@/components/BaseBar";
@@ -164,7 +142,7 @@ import { BASE_URL } from "@/api/api.config";
 
 export default {
   name: "AccountPage",
-  components: { BaseBar, BaseSpinner, LoadError },
+  components: { BaseBar, BaseSpinner, LoadError, TransactionHistory },
 
   data() {
     return {
@@ -312,30 +290,8 @@ export default {
       console.log(typeof this.accountNumber);
     },
 
-    formattedDate(date) {
-      const formattedDate = new Date(date);
-
-      return formattedDate.toLocaleDateString();
-    },
-
-    formattedAmount(from, amount) {
-      if (from !== this.accountNumber) {
-        return `+${amount.toLocaleString("ru")}`;
-      }
-
-      return `-${amount.toLocaleString("ru")}`;
-    },
-
     formattedCurrency(value) {
       return value.toLocaleString("ru");
-    },
-  },
-
-  computed: {
-    slicedTransactions() {
-      let slicedTransactions = this.accountData.transactions;
-
-      return slicedTransactions.reverse().slice(0, 10);
     },
   },
 
@@ -419,6 +375,10 @@ export default {
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
     background-color: var(--white);
   }
+
+  &__history {
+    width: 100%;
+  }
 }
 
 .transaction-form {
@@ -484,107 +444,6 @@ export default {
   }
 }
 
-.autofill-list {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  padding: 0;
-  background-color: var(--white);
-  border-radius: 16px;
-  max-width: 300px;
-  width: 100%;
-  max-height: 200px;
-  height: 0;
-  overflow: auto;
-  transition: height 0.3s ease-in-out, padding 0.3s ease-in-out;
-
-  &--open {
-    height: fit-content;
-    padding: 10px 0;
-    box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.1);
-  }
-
-  &__item {
-    display: block;
-    padding: 10px 30px;
-    text-align: center;
-    font-weight: 400;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
-
-    &:hover {
-      background-color: var(--info);
-    }
-  }
-}
-
-.history {
-  width: 100%;
-  background-color: var(--gray-7);
-  border-radius: 56px;
-  padding: 25px 50px 66px;
-
-  &__heading {
-    margin-bottom: 25px;
-    font-size: 20px;
-    line-height: 23px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-  }
-}
-
-.table {
-  &__head {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    align-items: center;
-    padding: 20px 50px;
-    border-radius: 15px;
-    background-color: var(--primary);
-  }
-
-  &__item {
-    font-family: "Ubuntu", "Work Sans", sans-serif;
-    font-size: 20px;
-    line-height: 24px;
-    font-weight: 500;
-    letter-spacing: -0.01em;
-    color: var(--white);
-
-    &:first-child {
-      grid-area: 1 / 1 / 2 / 3;
-    }
-
-    &:nth-child(2) {
-      grid-area: 1 / 3 / 2 / 5;
-    }
-  }
-}
-
-.row {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  align-items: center;
-  padding: 21px 54px 26px;
-  border-bottom: 2px solid rgba(0, 82, 255, 0.1);
-
-  &__item {
-    font-weight: 400;
-    font-size: 16px;
-    line-height: 24px;
-    letter-spacing: -0.01em;
-    color: var(--gray-2);
-
-    &:first-child {
-      grid-area: 1 / 1 / 2 / 3;
-    }
-
-    &:nth-child(2) {
-      grid-area: 1 / 3 / 2 / 5;
-    }
-  }
-}
-
 .error-local {
   display: block;
   font-size: 14px;
@@ -599,13 +458,5 @@ export default {
 
 .success {
   color: var(--success);
-}
-
-.positive {
-  color: var(--success);
-}
-
-.negative {
-  color: var(--error);
 }
 </style>

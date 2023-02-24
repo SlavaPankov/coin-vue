@@ -72,7 +72,8 @@ export default {
       temp.forEach((item) => {
         result.push(
           item.reduce(
-            (a, b) => (b.from !== this.currentAccount ? a + b.amount : a + 0),
+            (a, b) =>
+              b.from !== this.currentAccount ? a + b.amount : a - b.amount,
             0
           )
         );
