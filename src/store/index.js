@@ -14,6 +14,9 @@ export default createStore({
     getAccountData(state) {
       return state.accountData;
     },
+    getTransactions(state) {
+      return state.accountData.transactions.reverse();
+    },
     getAccountNumber(state) {
       return state.accountNumber;
     },

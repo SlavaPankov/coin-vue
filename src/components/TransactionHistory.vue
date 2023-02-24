@@ -10,7 +10,7 @@
       </ul>
       <div
         class="table__row row"
-        v-for="(transaction, index) in slicedTransactions"
+        v-for="(transaction, index) in transactionsData"
         :key="index"
       >
         <div class="row__from row__item">{{ transaction.from }}</div>
@@ -33,11 +33,6 @@
 export default {
   name: "TransactionHistory",
   props: {
-    lineCount: {
-      require: true,
-      type: Number,
-      default: 10,
-    },
     transactionsData: {
       require: true,
       type: Object,
@@ -61,14 +56,6 @@ export default {
       }
 
       return `-${amount.toLocaleString("ru")}`;
-    },
-  },
-
-  computed: {
-    slicedTransactions() {
-      let slicedTransactions = this.transactionsData;
-
-      return slicedTransactions.reverse().slice(0, 10);
     },
   },
 };

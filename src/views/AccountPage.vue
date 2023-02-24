@@ -84,14 +84,13 @@
       <router-link :to="{ name: 'accountDetail' }" class="account__chart">
         <base-bar
           :current-account="accountNumber"
-          :config="accountData.transactions"
+          :config="transactions"
           month-count="5"
         />
       </router-link>
       <router-link :to="{ name: 'accountDetail' }" class="account__history">
         <transaction-history
-          :line-count="10"
-          :transactions-data="accountData.transactions"
+          :transactions-data="slicedTransactions"
           :account-number="accountNumber"
         />
       </router-link>
@@ -142,6 +141,7 @@ export default {
       updateAutofillList: "updateAutofillList",
       updateCurrentAccountBalance: "updateCurrentAccountBalance",
       updateAccountNumber: "updateAccountNumber",
+      updateAccountData: "updateAccountData",
     }),
     ...mapActions({ loadAccountDataFromStore: "loadAccountData" }),
 
@@ -238,7 +238,7 @@ export default {
           this.formData.amount = null;
           this.transferInProcess = false;
           this.transferDone = true;
-          this.accountData = res.data.payload;
+          this.updateAccountData(res.data.payload);
 
           setTimeout(() => {
             this.transferDone = false;
@@ -262,7 +262,12 @@ export default {
       accountData: "getAccountData",
       accountNumber: "getAccountNumber",
       balance: "getBalance",
+      transactions: "getTransactions",
     }),
+
+    slicedTransactions() {
+      return this.transactions.slice(0, 10);
+    },
   },
 
   created() {
