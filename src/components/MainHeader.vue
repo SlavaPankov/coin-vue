@@ -24,7 +24,8 @@
               :class="{
                 'nav__link--active':
                   this.$route.name === 'accounts' ||
-                  this.$route.name === 'account',
+                  this.$route.name === 'account' ||
+                  this.$route.name === 'accountDetail',
               }"
             >
               Счета

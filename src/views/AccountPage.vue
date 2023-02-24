@@ -1,36 +1,6 @@
 <template>
   <div v-if="pageIsLoaded" class="container account__container">
-    <div class="account__head">
-      <div class="account__top">
-        <h1 class="heading-reset account__heading">Просмотр счёта</h1>
-        <router-link
-          :to="{ name: 'accounts' }"
-          class="btn btn-primary account__back"
-        >
-          <svg
-            class="arrow"
-            width="16"
-            height="12"
-            viewBox="0 0 16 12"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M3.83 5L7.41 1.41L6 0L0 6L6 12L7.41 10.59L3.83 7L16 7V5L3.83 5Z"
-              fill="white"
-            />
-          </svg>
-          Вернуться назад
-        </router-link>
-      </div>
-      <div class="account__bottom">
-        <div class="account__number">№ {{ accountNumber }}</div>
-        <div class="account__balance">
-          <span>Баланс</span>
-          {{ formattedCurrency(this.accountData.balance) }} ₽
-        </div>
-      </div>
-    </div>
+    <account-head :account-number="accountNumber" :balance="balance" />
     <div class="account__content">
       <form
         autocomplete="off"
@@ -133,25 +103,30 @@
 
 <script>
 import TransactionHistory from "@/components/TransactionHistory";
+import AccountHead from "@/components/AccountHead";
 import BaseSpinner from "@/components/BaseSpinner";
 import LoadError from "@/components/LoadError";
 import BaseBar from "@/components/BaseBar";
 import axios from "axios";
-import { mapMutations } from "vuex";
+import { mapMutations, mapActions, mapGetters } from "vuex";
 import { BASE_URL } from "@/api/api.config";
 
 export default {
   name: "AccountPage",
-  components: { BaseBar, BaseSpinner, LoadError, TransactionHistory },
+  components: {
+    AccountHead,
+    BaseBar,
+    BaseSpinner,
+    LoadError,
+    TransactionHistory,
+  },
 
   data() {
     return {
-      accountNumber: this.$route.params.account,
       formData: {
         from: this.$route.params.account,
       },
       formError: {},
-      accountData: null,
       pageLoading: true,
       pageIsLoaded: false,
       loadingFailed: false,
@@ -159,41 +134,32 @@ export default {
       transferInProcess: false,
       transferDone: false,
       focused: false,
-      chartData: {
-        labels: ["January", "February", "March"],
-        datasets: [{ data: [40, 20, 12] }],
-      },
-      chartOptions: {
-        responsive: true,
-      },
     };
   },
 
   methods: {
     ...mapMutations({
       updateAutofillList: "updateAutofillList",
+      updateCurrentAccountBalance: "updateCurrentAccountBalance",
+      updateAccountNumber: "updateAccountNumber",
     }),
+    ...mapActions({ loadAccountDataFromStore: "loadAccountData" }),
 
     loadAccountData() {
       this.pageLoading = true;
       this.loadingFailed = false;
 
-      axios
-        .get(`${BASE_URL}/account/${this.accountNumber}`, {
-          headers: {
-            Authorization: `Basic ${this.$store.state.authToken}`,
-          },
-        })
+      this.loadAccountDataFromStore()
         .then((res) => {
-          if (!res.data.payload) {
+          if (!res) {
             this.pageLoading = false;
             this.loadingFailed = true;
             return;
           }
 
-          this.accountData = res.data.payload;
           this.pageLoading = false;
           this.pageIsLoaded = true;
+          this.updateCurrentAccountBalance(this.accountData.balance);
         })
         .catch(() => {
           this.pageLoading = false;
@@ -289,13 +255,18 @@ export default {
       e.target.value = value.replace(/[a-z]/gi, "");
       console.log(typeof this.accountNumber);
     },
+  },
 
-    formattedCurrency(value) {
-      return value.toLocaleString("ru");
-    },
+  computed: {
+    ...mapGetters({
+      accountData: "getAccountData",
+      accountNumber: "getAccountNumber",
+      balance: "getBalance",
+    }),
   },
 
   created() {
+    this.updateAccountNumber(this.$route.params.account);
     this.loadAccountData();
   },
 };
@@ -304,61 +275,7 @@ export default {
 <style lang="scss" scoped>
 .account {
   &__container {
-    padding-top: 50px;
     padding-bottom: 50px;
-  }
-
-  &__heading {
-    font-size: 34px;
-    line-height: 40px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    color: var(--black);
-  }
-
-  &__head {
-    padding-bottom: 50px;
-    display: flex;
-    flex-direction: column;
-  }
-
-  &__top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    margin-bottom: 30px;
-  }
-
-  &__bottom {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  &__number {
-    font-size: 34px;
-    line-height: 40px;
-    font-weight: 400;
-    letter-spacing: -0.02em;
-  }
-
-  &__balance {
-    display: flex;
-    justify-content: space-between;
-    font-size: 20px;
-    line-height: 23px;
-    letter-spacing: -0.02em;
-
-    & span {
-      margin-right: 50px;
-      font-weight: 700;
-    }
-  }
-
-  &__back {
-    & svg {
-      margin-right: 14px;
-    }
   }
 
   &__content {
@@ -368,12 +285,8 @@ export default {
   }
 
   &__chart {
-    padding: 25px 50px;
     max-width: 684px;
     width: 100%;
-    border-radius: 50px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
-    background-color: var(--white);
   }
 
   &__history {

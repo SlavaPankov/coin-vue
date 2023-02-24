@@ -1,5 +1,11 @@
 <template>
-  <Bar id="my-chart" :options="chartConfigOptions" :data="chartConfigData" />
+  <div class="chart">
+    <Bar
+      id="my-chart"
+      :options="isStacked ? stackedChartOptions : chartConfigOptions"
+      :data="isStacked ? stackedChartConfig : chartConfigData"
+    />
+  </div>
 </template>
 
 <script>
@@ -39,6 +45,9 @@ export default {
     monthCount: {
       default: 11,
     },
+    isStacked: {
+      default: false,
+    },
   },
 
   data() {
@@ -74,6 +83,60 @@ export default {
           item.reduce(
             (a, b) =>
               b.from !== this.currentAccount ? a + b.amount : a - b.amount,
+            0
+          )
+        );
+      });
+
+      return result.reverse();
+    },
+
+    incomeForMonths() {
+      const temp = [];
+      const result = [];
+
+      for (let i = 0; i <= this.monthCount; i++) {
+        const sixMonthAgo = new Date();
+        sixMonthAgo.setMonth(sixMonthAgo.getMonth() - i);
+        temp.push(
+          this.config.filter((item) => {
+            const month = new Date(item.date);
+            return month.getMonth() === sixMonthAgo.getMonth();
+          })
+        );
+      }
+
+      temp.forEach((item) => {
+        result.push(
+          item.reduce(
+            (a, b) => (b.from !== this.currentAccount ? a + b.amount : a + 0),
+            0
+          )
+        );
+      });
+
+      return result.reverse();
+    },
+
+    outgoForMonths() {
+      const temp = [];
+      const result = [];
+
+      for (let i = 0; i <= this.monthCount; i++) {
+        const sixMonthAgo = new Date();
+        sixMonthAgo.setMonth(sixMonthAgo.getMonth() - i);
+        temp.push(
+          this.config.filter((item) => {
+            const month = new Date(item.date);
+            return month.getMonth() === sixMonthAgo.getMonth();
+          })
+        );
+      }
+
+      temp.forEach((item) => {
+        result.push(
+          item.reduce(
+            (a, b) => (b.from === this.currentAccount ? a + b.amount : a + 0),
             0
           )
         );
@@ -158,8 +221,95 @@ export default {
         },
       };
     },
+
+    stackedChartConfig() {
+      return {
+        datasets: [
+          {
+            data: this.outgoForMonths,
+            label: "",
+            backgroundColor: ["rgba(253, 78, 93, 1)"],
+            stack: "stack 0",
+            order: 1,
+          },
+          {
+            data: this.incomeForMonths,
+            label: "",
+            backgroundColor: ["rgba(118, 202, 102, 1)"],
+            stack: "stack 0",
+            order: 2,
+          },
+        ],
+        labels: this.months,
+      };
+    },
+
+    stackedChartOptions: function () {
+      return {
+        plugins: {
+          legend: {
+            display: false,
+          },
+          title: {
+            display: true,
+            text: "Соотношение входящих исходящих транзакций",
+            padding: {
+              bottom: 25,
+            },
+            align: "start",
+            font: {
+              size: 20,
+              lineHeight: 1.2,
+              weight: 700,
+            },
+            color: "rgba(0,0,0,1)",
+            fullSize: true,
+          },
+        },
+        scales: {
+          x: {
+            grid: {
+              lineWidth: 0,
+            },
+          },
+          y: {
+            position: "right",
+            stacked: true,
+            beginAtZero: true,
+            min: 0,
+            max: Math.max(
+              Math.max(...this.outgoForMonths),
+              Math.max(...this.incomeForMonths)
+            ),
+            ticks: {
+              major: true,
+              stepSize: Math.max(
+                Math.max(...this.outgoForMonths),
+                Math.max(...this.incomeForMonths)
+              ),
+            },
+            grid: {
+              lineWidth: 0,
+            },
+          },
+        },
+      };
+    },
   },
 };
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped>
+.chart {
+  padding: 25px 50px;
+  width: 100%;
+  border-radius: 50px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+  background-color: var(--white);
+
+  & canvas {
+    max-height: 288px;
+    height: 100%;
+  }
+}
+</style>
