@@ -111,7 +111,13 @@
           Отправить
         </button>
       </form>
-      <div class="account__chart">График</div>
+      <div class="account__chart">
+        <base-bar
+          :current-account="accountNumber"
+          :config="accountData.transactions"
+          month-count="5"
+        />
+      </div>
       <div class="account__history history">
         <h2 class="heading-reset history__heading">История переводов</h2>
         <div class="history__table table">
@@ -151,13 +157,14 @@
 <script>
 import BaseSpinner from "@/components/BaseSpinner";
 import LoadError from "@/components/LoadError";
+import BaseBar from "@/components/BaseBar";
 import axios from "axios";
 import { mapMutations } from "vuex";
 import { BASE_URL } from "@/api/api.config";
 
 export default {
   name: "AccountPage",
-  components: { BaseSpinner, LoadError },
+  components: { BaseBar, BaseSpinner, LoadError },
 
   data() {
     return {
@@ -174,6 +181,13 @@ export default {
       transferInProcess: false,
       transferDone: false,
       focused: false,
+      chartData: {
+        labels: ["January", "February", "March"],
+        datasets: [{ data: [40, 20, 12] }],
+      },
+      chartOptions: {
+        responsive: true,
+      },
     };
   },
 
@@ -295,11 +309,7 @@ export default {
     inputHandle(e) {
       const value = e.target.value;
       e.target.value = value.replace(/[a-z]/gi, "");
-    },
-
-    autofillListItemHandle(e) {
-      this.formData.to = e.target.textContent.trim();
-      this.focused = false;
+      console.log(typeof this.accountNumber);
     },
 
     formattedDate(date) {
@@ -402,6 +412,7 @@ export default {
   }
 
   &__chart {
+    padding: 25px 50px;
     max-width: 684px;
     width: 100%;
     border-radius: 50px;
