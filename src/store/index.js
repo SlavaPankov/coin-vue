@@ -9,6 +9,7 @@ export default createStore({
     autofillList: [],
     currentAccountBalance: 0,
     accountNumber: 0,
+    currenciesData: [],
   },
   getters: {
     getAccountData(state) {
@@ -22,6 +23,9 @@ export default createStore({
     },
     getBalance(state) {
       return state.accountData.balance;
+    },
+    getAllCurrencies(state) {
+      return state.currenciesData;
     },
   },
   mutations: {
@@ -40,6 +44,9 @@ export default createStore({
     updateAccountNumber(state, value) {
       state.accountNumber = value;
     },
+    updateCurrenciesData(state, value) {
+      state.currenciesData = value;
+    },
   },
   actions: {
     loadAccountData(context) {
@@ -53,6 +60,12 @@ export default createStore({
           context.commit("updateAccountData", res.data.payload);
           return res.data.payload;
         });
+    },
+    loadCurrenciesData(context) {
+      return axios.get(`${BASE_URL}/all-currencies`).then((res) => {
+        context.commit("updateCurrenciesData", res.data.payload);
+        return res.data.payload;
+      });
     },
   },
   modules: {},

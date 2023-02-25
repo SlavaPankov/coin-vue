@@ -10,6 +10,13 @@
       >
       </a>
     </li>
+    <li
+      v-if="totalPages > 5 && this.currentPage > step"
+      class="pagination__item"
+      @click.prevent="setPageBackward(step)"
+    >
+      <a href="#" class="pagination__link"> ... </a>
+    </li>
     <li class="pagination__item" v-for="page in pages" :key="page">
       <a
         href="#"
@@ -19,6 +26,13 @@
       >
         {{ page }}
       </a>
+    </li>
+    <li
+      v-if="totalPages > 5 && this.currentPage < totalPages - 5"
+      class="pagination__item"
+      @click.prevent="setPageForward(step)"
+    >
+      <a href="#" class="pagination__link"> ... </a>
     </li>
     <li class="pagination__item">
       <a
@@ -37,10 +51,24 @@
 export default {
   name: "BasePagination",
   props: ["count", "countOnPage", "currentPage"],
+  data() {
+    return {
+      step: 5,
+    };
+  },
 
   computed: {
     pages() {
-      return 15;
+      const pages = [];
+      for (let i = 1; i < this.totalPages; i++) {
+        pages.push(i);
+      }
+
+      return pages.slice(this.currentPage - 1, this.currentPage + this.step);
+    },
+
+    totalPages() {
+      return Math.ceil(this.count / this.countOnPage);
     },
 
     paginationForward() {
@@ -57,6 +85,22 @@ export default {
   methods: {
     saveCurrentPage(page) {
       this.$emit("update:currentPage", page);
+    },
+
+    setPageForward(value) {
+      this.$emit(
+        "update:currentPage",
+        this.currentPage + value >= this.totalPages
+          ? this.pages[this.pages.length - 1]
+          : this.currentPage + value
+      );
+    },
+
+    setPageBackward(value) {
+      this.$emit(
+        "update:currentPage",
+        this.currentPage - value === 0 ? 1 : this.currentPage - value
+      );
     },
   },
 };
@@ -96,16 +140,21 @@ export default {
     color: #222;
     text-align: center;
     -webkit-transition: all 0.2s ease;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease-in-out;
+    border: 1px solid var(--primary);
+    border-radius: 7px;
+    margin: 0 5px;
   }
 
   &__link[href]:not(:disabled):focus,
   &__link[href]:not(:disabled):hover {
-    opacity: 0.6;
+    background-color: var(--info);
+    color: var(--white);
   }
 
   &__link--current {
-    font-weight: 700;
+    background-color: var(--primary);
+    color: var(--white);
   }
 
   &__link--arrow {
