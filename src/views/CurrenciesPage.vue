@@ -138,10 +138,17 @@
           Изменение курсов в реальном времени
         </h2>
         <ul class="list-reset feed-list">
-          <li class="feed-list__item">
-            <div class="feed-list__currencies">BTC/ETH</div>
+          <li
+            class="feed-list__item"
+            :class="currency.change === 1 ? 'rate-down' : 'rate-up'"
+            v-for="currency in currencyFeed"
+            :key="currency.rate"
+          >
+            <div class="feed-list__currencies">
+              {{ currency.from }}/{{ currency.to }}
+            </div>
             <div class="feed-list__change">
-              <div class="feed-list__amount">6.3123545131</div>
+              <div class="feed-list__amount">{{ currency.rate }}</div>
               <svg
                 width="20"
                 height="10"
@@ -166,7 +173,7 @@ import BaseSpinner from "@/components/BaseSpinner";
 import LoadError from "@/components/LoadError";
 import { mapActions, mapGetters } from "vuex";
 import axios from "axios";
-import { BASE_URL } from "@/api/api.config";
+import { BASE_URL, BASE_WS_URL } from "@/api/api.config";
 
 export default {
   name: "CurrenciesPage",
@@ -174,7 +181,7 @@ export default {
   data() {
     return {
       ownCurrenciesData: {},
-      currencyFeed: {},
+      currencyFeed: [],
       formData: {},
       formError: {},
       fromListOpen: false,
@@ -289,6 +296,17 @@ export default {
           }, 3000);
         });
     },
+
+    changeCurrencies() {
+      const WEBSOCKET = new WebSocket(`${BASE_WS_URL}/currency-feed`);
+
+      WEBSOCKET.onmessage = (event) => {
+        this.currencyFeed.push(JSON.parse(event.data));
+        if (this.currencyFeed.length > 22) {
+          this.currencyFeed.shift();
+        }
+      };
+    },
   },
 
   mounted() {
@@ -306,6 +324,7 @@ export default {
   created() {
     this.getOwnCurrencies();
     this.loadCurrenciesData().then((res) => (this.formData.to = res[0]));
+    this.changeCurrencies();
   },
 };
 </script>
@@ -313,11 +332,14 @@ export default {
 <style lang="scss" scoped>
 .currencies {
   &__container {
+    display: flex;
+    flex-wrap: wrap;
     padding-top: 50px;
     padding-bottom: 50px;
   }
 
   &__heading {
+    width: 100%;
     margin-bottom: 56px;
     font-size: 34px;
     line-height: 40px;
@@ -327,6 +349,7 @@ export default {
   }
 
   &__content {
+    width: 100%;
     display: flex;
     align-items: flex-start;
     gap: 50px;
@@ -345,6 +368,7 @@ export default {
     border-radius: 50px;
     max-width: 708px;
     width: 100%;
+    height: 100%;
     max-height: 100%;
   }
 
@@ -603,6 +627,30 @@ export default {
     font-size: 20px;
     line-height: 23px;
     letter-spacing: 0.1em;
+  }
+}
+
+.rate-down {
+  &::after {
+    border-color: var(--error);
+  }
+
+  & svg path {
+    fill: var(--error);
+  }
+}
+
+.rate-up {
+  &::after {
+    border-color: var(--success);
+  }
+
+  & svg {
+    transform: rotate(180deg);
+
+    & path {
+      fill: var(--success);
+    }
   }
 }
 </style>
