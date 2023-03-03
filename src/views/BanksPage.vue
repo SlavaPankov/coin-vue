@@ -1,5 +1,5 @@
 <template>
-  <div v-if="pageIsLoaded" class="container banks__container"пш>
+  <div v-if="pageIsLoaded" class="container banks__container">
     <h1 class="heading-reset banks__heading">Карта банкоматов</h1>
     <yandex-map
       :coords="[55.75399399999374, 37.62209300000001]"
